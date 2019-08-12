@@ -275,6 +275,7 @@ def printClock(time_arg):
 	global clock_area_frontlightBtnDOWN
 	global clock_area_invertBtn
 	global frontlightLevel
+	global isWifiOn
 	clockToDisplay = time.strftime("%H:%M", time.localtime(time_arg))
 	dateToDisplay = time.strftime("%A %d %B %Y", time.localtime(time_arg))
 	img = Image.new('L', (clock_area[2], clock_area[3]), color=white)
