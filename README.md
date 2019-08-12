@@ -1,6 +1,9 @@
 # Kobo-Dashboard
 A dashboard for Kobo, including a clock, an interactive calendar widget, a weather widget and a phone-notification widget
 
+![Main image](https://github.com/Mavireck/Kobo-Dashboard/blob/master/DemoImages/20190812_145209.jpg?raw=true)
+
+
 ### Installation:
 * Install this all-in-one package first (Python, FBInk etc...):
 https://www.mobileread.com/forums/showthread.php?t=254214
