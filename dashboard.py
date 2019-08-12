@@ -601,7 +601,7 @@ calendar_data={}
 calendar_filepath = "files/calendar.json"
 runeStr=""
 last_text_box_used = ""
-sample_event={"beginHour":16,"endHour":18,"title":"Nouvel evenement","color":14}
+sample_event={"beginHour":16,"endHour":18,"title":"New Event","color":14}
 
 def setupCalendar():
 	global calendar_data
