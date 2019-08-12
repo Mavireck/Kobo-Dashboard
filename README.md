@@ -24,6 +24,8 @@ https://www.mobileread.com/forums/showthread.php?t=274231
 
 ### About the notification mode:
 It is meant to be used with your android phone. You need an app which listens to the notification, then sends their content via a HTTP Post request to the kobo. The POST parameters must be "title", "message","package","timestamp". The first 3 must be base64encoded.
+
 I personally use this app:
 https://play.google.com/store/apps/details?id=com.llamalab.automate&hl=fr
+
 Although you can use the one you want. (if you need more details about how I used this app, send me a message via the Mobileread forum)
