@@ -19,13 +19,13 @@ import ctypes
 
 # Now for the Python-version-dependent modules:
 try:
-    from SimpleHTTPServer import SimpleHTTPRequestHandler
+	from SimpleHTTPServer import SimpleHTTPRequestHandler
 except ImportError:
-    from http.server import SimpleHTTPRequestHandler
+	from http.server import SimpleHTTPRequestHandler
 try:
-    from SocketServer import TCPServer as HTTPServer
+	from SocketServer import TCPServer as HTTPServer
 except ImportError:
-    from http.server import HTTPServer
+	from http.server import HTTPServer
 try:
 	from urlparse import parse_qs
 except ImportError:
@@ -52,6 +52,7 @@ last_update_calendar = 0
 keyboardCallFunction=False
 isKeyboardMode = False
 border = 10
+useOldPrintImg = False
 
 isInverted=conf["main"]["general"]["isInverted"]
 frontlightLevel = 0
@@ -186,7 +187,7 @@ def displayArray(arrayToDisplay,mode):
 	mode_w, mode_h = notifsImg.textsize(mode, font=small_font)
 	notifsImg.text((int(0.5*(notification_area[2]+notification_area[0])-0.5*mode_w),10), mode, font=small_font, fill=black)
 	# Popping element if there are too many
-	sample_notif_title_w, sample_notif_title_h = notifsImg.textsize("Sample notification text to know th average height of the texts", font=tiny_font)
+	sample_notif_title_w, sample_notif_title_h = notifsImg.textsize("average height of the texts", font=tiny_font)
 	while len(arrayToDisplay)*sample_notif_title_h+mode_h+10>notification_area[3]-notification_area[1]:
 		arrayToDisplay = arrayToDisplay[1:]
 		if mode == "Notifications":
@@ -217,7 +218,14 @@ def displayArray(arrayToDisplay,mode):
 		notifsImg.text((10+notif_title_w,start_h_offset_notif), temp_text_notif, font=tiny_font, fill=black)
 		start_h_offset_notif += notif_title_h + 8
 	img.save(conf["imgPath"]["notifications"])
-	mprintImg(conf["imgPath"]["notifications"], notification_area[0], notification_area[1]+1)
+	if useOldPrintImg:
+		# OLD WAY
+		mprintImg_path(conf["imgPath"]["notifications"], notification_area[0], notification_area[1]+1)
+	else:	
+		# NEW WAY:
+		raw_data=img.tobytes("raw")
+		raw_len = len(raw_data)
+		mprintImg(raw_data,notification_area[0], notification_area[1]+1,img.width,img.height,raw_len)
 	return True
 
 def cleanDuplicate(arrayToClean):
@@ -316,7 +324,14 @@ def printClock(time_arg):
 	clock.text((int(0.5*clock_area[2]-0.5*clock_w), int(0.5*clock_area[3]-0.6*clock_h)), clockToDisplay, font=comfortaa_big, fill=black)
 	clock.text((max(int(0.5*clock_area[2]-0.5*date_w),10), int(0.5*clock_area[3]+0.7*clock_h)), dateToDisplay, font=comfortaa_small, fill=50)
 	img.save(conf["imgPath"]["clock"])
-	mprintImg(conf["imgPath"]["clock"], 0, 0)
+	if useOldPrintImg:
+		# # OLD WAY:
+		mprintImg_path(conf["imgPath"]["clock"], 0, 0)
+	else:
+		# NEW WAY:
+		raw_data=img.tobytes("raw")
+		raw_len = len(raw_data)
+		mprintImg(raw_data,0,0,img.width,img.height,raw_len)
 
 def readBatteryPercentage():
 	with open(conf["main"]["clock"]["batteryCapacityFile"]) as state:
@@ -391,7 +406,13 @@ def onTouchClock(x,y):
 			isInverted = False
 		else:
 			isInverted = True
-		printAllAllOverAgain()
+		# printAllAllOverAgain()
+		fbink_dumpcfg_temp = ffi.new("FBInkDump *") # resetting dump (don't know if needed)
+		FBInk.fbink_dump(fbfd,fbink_dumpcfg_temp)
+		fbink_cfg.is_inverted = True
+		FBInk.fbink_restore(fbfd, fbink_cfg,fbink_dumpcfg_temp);
+		fbink_cfg.is_inverted = False
+		mprintLog("Screen inverted")
 	else:
 		mprintLog("Updating clock")
 		printClock(time.time())
@@ -566,9 +587,16 @@ def printWeather(weatherData):
 	printComingDay(time.strftime("%A", time.localtime(time.time()+60*60*24*3)),tomorrowPlusTwo,weather_area_coming_day_3)
 
 
-	# Printing image	
-	img.save(conf["imgPath"]["weather"])
-	mprintImg(conf["imgPath"]["weather"], weather_area[0], weather_area[1]+1)
+	# Printing image
+	if useOldPrintImg:
+		# OLD WAY:
+		img.save(conf["imgPath"]["weather"])
+		mprintImg_path(conf["imgPath"]["weather"], weather_area[0], weather_area[1]+1)
+	else:	
+		# NEW WAY:
+		raw_data=img.tobytes("raw")
+		raw_len = len(raw_data)
+		mprintImg(raw_data,weather_area[0], weather_area[1]+1,img.width,img.height,raw_len)
 	# fbink_cfg_weather.row = 16
 	# fbink_cfg_weather.col = 1
 	# FBInk.fbink_print(fbfd, "Here is the weather : good enough", fbink_cfg_weather)
@@ -578,16 +606,16 @@ def onTouchWeather(x,y):
 	return True
 
 def most_frequent(List):
-    dict = {}
-    count, itm = 0, ''
-    for item in reversed(List):
-        dict[item] = dict.get(item, 0) + 1
-        if dict[item] >= count:
-            count, itm = dict[item], item
-    return (itm)
+	dict = {}
+	count, itm = 0, ''
+	for item in reversed(List):
+		dict[item] = dict.get(item, 0) + 1
+		if dict[item] >= count:
+			count, itm = dict[item], item
+	return (itm)
 
 def average(lst): 
-    return sum(lst) / len(lst) 
+	return sum(lst) / len(lst) 
 
 ###############################################################################################
 current_calendar_view = "week"
@@ -674,8 +702,15 @@ def printCalendar_WeekView(data,starting_day):
 	# Then print the icon to change week (by changing starting_day)
 
 	# Then display image
-	img.save(conf["imgPath"]["cd_weekView"])
-	mprintImg(conf["imgPath"]["cd_weekView"], calendar_area[0], calendar_area[1]+1)
+	if useOldPrintImg:
+		# OLD WAY:
+		img.save(conf["imgPath"]["cd_weekView"])
+		mprintImg_path(conf["imgPath"]["cd_weekView"], calendar_area[0], calendar_area[1]+1)
+	else:	
+		# NEW WAY:
+		raw_data=img.tobytes("raw")
+		raw_len = len(raw_data)
+		mprintImg(raw_data,calendar_area[0], calendar_area[1]+1,img.width,img.height,raw_len)
 	return True
 
 def printCalendar_singleDay(dayData,dayNumber):
@@ -775,7 +810,14 @@ def printCalendar_AddEventView(data,starting_day,day):
 	img.paste(delete_img_opened,[calendar_area_addEvent_Delete[0],calendar_area_addEvent_Delete[1]])
 	#Finally,display everything
 	img.save("img/full_calendar_dayView.png")
-	mprintImg("img/full_calendar_dayView.png", calendar_area[0], calendar_area[1]+1)
+	if useOldPrintImg:
+		# OLD WAY:
+		mprintImg_path("img/full_calendar_dayView.png", calendar_area[0], calendar_area[1]+1)
+	else:	
+		# NEW WAY:
+		raw_data=img.tobytes("raw")
+		raw_len = len(raw_data)
+		mprintImg(raw_data,calendar_area[0], calendar_area[1]+1,img.width,img.height,raw_len)
 	# Then print textboxes above everything
 	calendar_area_addEvent_Textboxes_area = [calendar_area_days[1][0]+1,0,calendar_area[2],calendar_area[3]-calendar_area[1]-4*helptext_h-2*border]
 	printCalendar_printTextboxesArea()
@@ -820,9 +862,16 @@ def printCalendar_printTextboxesArea():
 	cd_tb.text((calendar_area_addEvent_endHour[0]+1*textboxes_border-calendar_area_days[1][0],calendar_area_addEvent_endHour[1]+1*textboxes_border),str('{0:g}'.format(float(current_calendar_eventBeingEdited["endHour"]))),font=small_font,fill=50)
 	cd_tb.text((calendar_area_addEvent_Title[0]+1*textboxes_border-calendar_area_days[1][0],calendar_area_addEvent_Title[1]+1*textboxes_border),str(current_calendar_eventBeingEdited["title"]),font=small_font,fill=10)
 	cd_tb.text((calendar_area_addEvent_Color[0]+1*textboxes_border-calendar_area_days[1][0],calendar_area_addEvent_Color[1]+1*textboxes_border),str(current_calendar_eventBeingEdited["color"]),font=small_font,fill=cv16BitsTo255(int(current_calendar_eventBeingEdited["color"])))
-	tb_img = "img/cd_textboxes.png"
-	img.save(tb_img)
-	mprintImg(tb_img, calendar_area[0]+calendar_area_addEvent_Textboxes_area[0],calendar_area[1]+calendar_area_addEvent_Textboxes_area[1]+1)
+	if useOldPrintImg:
+		# OLD WAY:
+		tb_img = "img/cd_textboxes.png"
+		img.save(tb_img)
+		mprintImg_path(tb_img, calendar_area[0]+calendar_area_addEvent_Textboxes_area[0],calendar_area[1]+calendar_area_addEvent_Textboxes_area[1]+1)
+	else:	
+		# NEW WAY:
+		raw_data=img.tobytes("raw")
+		raw_len = len(raw_data)
+		mprintImg(raw_data,calendar_area[0]+calendar_area_addEvent_Textboxes_area[0],calendar_area[1]+calendar_area_addEvent_Textboxes_area[1]+1,img.width,img.height,raw_len)
 	return True
 
 def saveEvent(eventData,fullData,week_starting_day,day_of_the_week):
@@ -888,7 +937,7 @@ def keyboard_cd_endHour(key):
 		current_calendar_eventBeingEdited["endHour"] = sample_event["endHour"]
 	printCalendar_printTextboxesArea()
 
-useFastTextInput = False  #recommended
+useFastTextInput = False  # False recommended (WIP)
 def keyboard_cd_Title(key):
 	global current_calendar_eventBeingEdited
 	global calendar_data
@@ -919,17 +968,21 @@ def keyboard_cd_Title(key):
 		# NEWER SOLUTION : print only the textboxes area:
 		printCalendar_printTextboxesArea()
 	else:
-		# # # Let's do this better : print only the specific text using fbink's openType and truetype support
-		# FBInk.fbink_add_ot_font("fonts/Merriweather-Regular.ttf", FBInk.FNT_REGULAR);
-		# FBInk.fbink_add_ot_font("fonts/Merriweather-Bold.ttf", FBInk.FNT_BOLD);
-		# FBInk.fbink_print_ot(fbfd, string, fbink_cfg);
-		# FBInk.fbink_free_ot_fonts();
+		# # Let's do this better : print only the specific text using fbink's openType and truetype support
+		
+		fbink_ot_cfg.margins.top = 500
+		fbink_ot_cfg.margins.bottom = 600
+		fbink_ot_cfg.margins.left = 400
+		fbink_ot_cfg.margins.right = 50
+		fbink_ot_cfg.size_px = 26
+		fbink_ot_cfg.is_formatted = True
+		FBInk.fbink_print_ot(fbfd, str(current_calendar_eventBeingEdited["title"]), fbink_ot_cfg, fbink_cfg, ffi.NULL);
 		# # # NOTE : I once again was not able to use the Python bindings, so let's call use a bash command (yeah...)
 		# # NOT A DECENT SOLUTION : text might be executed by shell if passing a string containing '
 		# # And when erasing, it does not erase previously written text
 		# # And not hiding the text already here
 		# # And hard to use and properly define
-		os.system("fbink -t regular=fonts/Merriweather-Regular.ttf,bold=fonts/Merriweather-Bold.ttf,italic=fonts/Merriweather-RegularItalic.ttf,bolditalic=fonts/Merriweather-BoldItalic.ttf,size=10,top=500,bottom=600,left=400,right=50,format '" + str(current_calendar_eventBeingEdited["title"]) +"'")
+		# os.system("fbink -t regular=fonts/Merriweather-Regular.ttf,bold=fonts/Merriweather-Bold.ttf,italic=fonts/Merriweather-RegularItalic.ttf,bolditalic=fonts/Merriweather-BoldItalic.ttf,size=10,top=500,bottom=600,left=400,right=50,format '" + str(current_calendar_eventBeingEdited["title"]) +"'")
 
 def keyboard_cd_Color(key):
 	global current_calendar_eventBeingEdited
@@ -1088,10 +1141,14 @@ def printBackground():
 	bg.line([border,calendar_area[3],conf["main"]["general"]["width"]-border, calendar_area[3]], gray)
 	# Saving background and displaying it
 	img.save(conf["imgPath"]["background"])
-	mprintImg(conf["imgPath"]["background"], 0, 0)
-	# fbink_cfg_IP.row = 0
-	# fbink_cfg_IP.col = 33
-	# FBInk.fbink_print(fbfd, str(get_ip()), fbink_cfg_IP)
+	if useOldPrintImg:
+		# OLD WAY:
+		mprintImg_path(conf["imgPath"]["background"], 0, 0)
+	else:	
+		# NEW WAY:
+		raw_data=img.tobytes("raw")
+		raw_len = len(raw_data)
+		mprintImg(raw_data,0,0,img.width,img.height,raw_len)
 	return True
 
 def touchDriverFc_old():
@@ -1168,7 +1225,7 @@ def printKeyboard():
 		isKeyboardMode = True
 		fbink_dumpcfg = ffi.new("FBInkDump *") # resetting dump (don't know if needed)
 		FBInk.fbink_region_dump(fbfd,int(vk.StartCoords["X"]),int(vk.StartCoords["Y"]),int(vk.widthPX),int(vk.heightPX)+2,fbink_cfg,fbink_dumpcfg)
-		mprintImg(vkPNG, int(vk.StartCoords["X"]), int(vk.StartCoords["Y"]))
+		mprintImg_path(vkPNG, int(vk.StartCoords["X"]), int(vk.StartCoords["Y"]))
 		return True
 
 def hideKeyboard():
@@ -1214,23 +1271,23 @@ def printAllAllOverAgain():
 ###############################################################################################
 
 def terminate_thread(thread):
-    """Terminates a python thread from another thread.
+	"""Terminates a python thread from another thread.
 
-    :param thread: a threading.Thread instance
-    """
-    if not thread.isAlive():
-        return
+	:param thread: a threading.Thread instance
+	"""
+	if not thread.isAlive():
+		return
 
-    exc = ctypes.py_object(SystemExit)
-    res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
-        ctypes.c_long(thread.ident), exc)
-    if res == 0:
-        raise ValueError("nonexistent thread id")
-    elif res > 1:
-        # """if it returns a number greater than one, you're in trouble,
-        # and you should call it again with exc=NULL to revert the effect"""
-        ctypes.pythonapi.PyThreadState_SetAsyncExc(thread.ident, None)
-        raise SystemError("PyThreadState_SetAsyncExc failed")
+	exc = ctypes.py_object(SystemExit)
+	res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
+		ctypes.c_long(thread.ident), exc)
+	if res == 0:
+		raise ValueError("nonexistent thread id")
+	elif res > 1:
+		# """if it returns a number greater than one, you're in trouble,
+		# and you should call it again with exc=NULL to revert the effect"""
+		ctypes.pythonapi.PyThreadState_SetAsyncExc(thread.ident, None)
+		raise SystemError("PyThreadState_SetAsyncExc failed")
 
 def wifiDown(killHTTP=False):
 	global httpd
@@ -1319,7 +1376,7 @@ def timeDelta(date1,date2):
 	dt = date2 - date1
 	return dt
 
-def mprintImg(path,x,y):
+def mprintImg_path(path,x,y):
 	global isInverted
 	# try:
 	if isInverted:
@@ -1331,6 +1388,17 @@ def mprintImg(path,x,y):
 		FBInk.fbink_print_image(fbfd, str(path).encode('ascii'), x, y, fbink_cfg)
 	# except:
 	# 	print("no image found at this path")
+
+def mprintImg(raw_data,x,y,w,h,length=None):
+	global isInverted
+	if length==None:
+		length = len(raw_data)
+	if isInverted:
+		fbink_cfg.is_inverted = True
+	else:
+		fbink_cfg.is_inverted = False
+	# FBInk.fbink_print_image(fbfd, str(path).encode('ascii'), x, y, fbink_cfg)
+	FBInk.fbink_print_raw_data(fbfd, raw_data, w, h, length, x, y, fbink_cfg)
 
 def deleteTempImgFiles():
 	"""
@@ -1356,6 +1424,12 @@ fbink_dumpcfg = ffi.new("FBInkDump *")
 fbfd = FBInk.fbink_open()
 FBInk.fbink_init(fbfd, fbink_cfg_IP)
 
+fbink_ot_cfg = ffi.new("FBInkOTConfig *")
+FBInk.fbink_add_ot_font("fonts/Merriweather-Regular.ttf", FBInk.FNT_REGULAR);
+FBInk.fbink_add_ot_font("fonts/Merriweather-RegularItalic.ttf", FBInk.FNT_ITALIC);
+FBInk.fbink_add_ot_font("fonts/Merriweather-BoldItalic.ttf", FBInk.FNT_BOLD_ITALIC);
+FBInk.fbink_add_ot_font("fonts/Merriweather-Bold.ttf", FBInk.FNT_BOLD);
+
 #Clear screen
 FBInk.fbink_cls(fbfd, fbink_cfg_IP)
 
@@ -1365,7 +1439,9 @@ deleteTempImgFiles()
 printBackground()
 
 # CLEAN REFRESH
-os.system("fbink -refresh")  #Couldn't do it in Python... why??
+fbink_cfg.is_flashing = True
+FBInk.fbink_refresh(fbfd, 0, 0, 0, 0, FBInk.HWD_PASSTHROUGH, fbink_cfg)
+fbink_cfg.is_flashing = False
 
 # DISABLE FRONTLIGHT FIRST
 setFrontlightLevel(frontlightLevel)
