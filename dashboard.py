@@ -1243,31 +1243,6 @@ def hideKeyboard():
 		mprintLog("Could not restore dump, staying in keyboard mode")
 		return False
 
-def printAllAllOverAgain():
-	"""
-	Fetches all the img files and prints them in the correct order. 
-	Needed to invert screen.
-	"""
-	global isKeyboardMode
-	global current_calendar_eventBeingEdited
-	global current_calendar_eventBeingEdited_beforeEdit
-	global current_calendar_isEditMode
-	global last_text_box_usedlast_text_box_used
-	isKeyboardMode = False 		#By displaying the images again, we hide the keyboard
-	current_calendar_eventBeingEdited = False
-	current_calendar_eventBeingEdited_beforeEdit = False
-	current_calendar_isEditMode = False
-	last_text_box_usedlast_text_box_used = False
-	mprintImg(conf["imgPath"]["background"], 0, 0)
-	if os.path.isfile(conf["imgPath"]["clock"]):
-		mprintImg(conf["imgPath"]["clock"], 0, 0)
-	if os.path.isfile(conf["imgPath"]["cd_weekView"]):
-		mprintImg(conf["imgPath"]["cd_weekView"], calendar_area[0], calendar_area[1]+1)
-	if os.path.isfile(conf["imgPath"]["weather"]):
-		mprintImg(conf["imgPath"]["weather"], weather_area[0], weather_area[1]+1)
-	if os.path.isfile(conf["imgPath"]["notifications"]):
-		mprintImg(conf["imgPath"]["notifications"], notification_area[0], notification_area[1]+1)
-	return True
 ###############################################################################################
 
 def terminate_thread(thread):
