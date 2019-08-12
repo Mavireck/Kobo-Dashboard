@@ -1,0 +1,59 @@
+{
+	"main":{
+		"general":{
+			"width":1080,
+			"height":1440,
+			"isInverted":false,
+			"touchDebounceTime":0.7,
+			"touchDebounceAreaSize":7
+		},
+		"notif":{
+			"size":0.20,
+			"title_maxLength":20,
+			"total_maxLength":70
+		},
+		"weather":{
+			"size":0.25,
+			"sleep":86400,
+			"baseURL":"http://api.openweathermap.org/data/2.5/forecast",
+			"appid":"6f7ef9ee9421ffed42f7f7d853fd4812",
+			"city":"3037253"
+		},
+		"calendar":{
+			"size":0.30,
+			"numberOfDaysOnScreen":7
+		},
+		"clock":{
+			"size":0.25,
+			"sleep":59.94,
+			"batteryStatusFile":"/sys/devices/platform/pmic_battery.1/power_supply/mc13892_bat/status",
+			"batteryCapacityFile":"/sys/devices/platform/pmic_battery.1/power_supply/mc13892_bat/capacity"
+		}
+	},
+	"imgPath":{
+		"background":"./img/bg.png",
+		"clock":"./img/clock.png",
+		"cd_weekView":"./img/cd_weekView.png",
+		"weather":"./img/weather.png",
+		"notifications":"./img/notifications.png"
+	},
+	"margins":{},
+	"sizes":{},
+	"text":{
+		"general":{
+			"wifiDisconnected":"Wifi off",
+			"wifiOnNotConnected":"Not connected",
+			"frontlight":"Frontlight: "
+		},
+		"weather":{
+			"today":"Today",
+			"tomorrow":"Tomorrow"
+		},
+		"calendar":{
+			"editMode":"You  are in Edit Event mode.",
+			"newEventMode":"You are in New Event mode",
+			"helperText2":"Click on an existing event to edit it",
+			"helperText3":"Edit hours,text and colors (between 0 for black and 16 for white)."
+		}
+	}
+}
