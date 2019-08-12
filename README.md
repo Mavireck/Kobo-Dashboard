@@ -19,7 +19,7 @@ https://www.mobileread.com/forums/showthread.php?t=274231
 
 ### How to use:
 * You should start it with wifi on.
-* You can turn frontlight up and down with the buttons, and you can also invert the screen (if you are to use it inverted more regularly, I suggest you change the setting in the config file instead. The button is only a dirty workaround change it when you want it but should not be used)
+* You can turn frontlight up and down with the buttons, and you can also invert the screen.
 * To change weeks in the calendar, click on the name of the first and last days being displayed.
 * To edit an event, click on the corresponding day, then on the corresponding event. Then, you can change the event data.
 * You can update the clock by clicking on it. It will also update the frontlight setting and battery level. Anyway, it is updated every minute (you can change it in the configuration file)
