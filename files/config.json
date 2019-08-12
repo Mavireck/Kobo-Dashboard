@@ -16,8 +16,8 @@
 			"size":0.25,
 			"sleep":86400,
 			"baseURL":"http://api.openweathermap.org/data/2.5/forecast",
-			"appid":"6f7ef9ee9421ffed42f7f7d853fd4812",
-			"city":"3037253"
+			"appid":"00000000000000000000000000000000",
+			"city":"2988507"
 		},
 		"calendar":{
 			"size":0.30,
