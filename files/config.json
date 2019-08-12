@@ -3,7 +3,7 @@
 		"general":{
 			"width":1080,
 			"height":1440,
-			"isInverted":false,
+			"isNightMode":false,
 			"touchDebounceTime":0.7,
 			"touchDebounceAreaSize":7
 		},

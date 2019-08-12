@@ -54,7 +54,7 @@ isKeyboardMode = False
 border = 10
 useOldPrintImg = False
 
-isInverted=conf["main"]["general"]["isInverted"]
+isNightMode=conf["main"]["general"]["isNightMode"]
 frontlightLevel = 0
 
 tiny_tiny_tiny_font = ImageFont.truetype("fonts/Cabin-Regular.ttf", 15)
@@ -377,7 +377,7 @@ def onTouchClock(x,y):
 	global clock_area_frontlightBtnUP
 	global clock_area_frontlightBtnDOWN
 	global clock_area_invertBtn
-	global isInverted
+	global isNightMode
 	relativex=x-clock_area[0]
 	relativey=y-clock_area[1]
 	if coordsInArea(relativex,relativey,clock_area_wifiBtn):
@@ -402,17 +402,16 @@ def onTouchClock(x,y):
 			frontlightLevel -= 1
 			setFrontlightLevel(frontlightLevel)
 	elif coordsInArea(relativex,relativey,clock_area_invertBtn):
-		if isInverted:
-			isInverted = False
+		if isNightMode:
+			isNightMode = False
+			fbink_cfg.is_nightmode = False
 		else:
-			isInverted = True
-		# printAllAllOverAgain()
-		fbink_dumpcfg_temp = ffi.new("FBInkDump *") # resetting dump (don't know if needed)
-		FBInk.fbink_dump(fbfd,fbink_dumpcfg_temp)
-		fbink_cfg.is_inverted = True
-		FBInk.fbink_restore(fbfd, fbink_cfg,fbink_dumpcfg_temp);
-		fbink_cfg.is_inverted = False
-		mprintLog("Screen inverted")
+			isNightMode = True
+			fbink_cfg.is_nightmode = True
+		# Then refresh the screen, but inverted this time
+		fbink_cfg.is_flashing = True
+		FBInk.fbink_refresh(fbfd, 0, 0, 0, 0, FBInk.HWD_PASSTHROUGH, fbink_cfg)
+		fbink_cfg.is_flashing = False
 	else:
 		mprintLog("Updating clock")
 		printClock(time.time())
@@ -1377,9 +1376,9 @@ def timeDelta(date1,date2):
 	return dt
 
 def mprintImg_path(path,x,y):
-	global isInverted
+	global isNightMode
 	# try:
-	if isInverted:
+	if isNightMode:
 		image = Image.open(str(path))
 		inverted_image = PIL.ImageOps.invert(image)
 		inverted_image.save(str(path)+"_inverted.png")
@@ -1390,13 +1389,13 @@ def mprintImg_path(path,x,y):
 	# 	print("no image found at this path")
 
 def mprintImg(raw_data,x,y,w,h,length=None):
-	global isInverted
+	global isNightMode
 	if length==None:
 		length = len(raw_data)
-	if isInverted:
-		fbink_cfg.is_inverted = True
+	if isNightMode:
+		fbink_cfg.is_nightmode = True
 	else:
-		fbink_cfg.is_inverted = False
+		fbink_cfg.is_nightmode = False
 	# FBInk.fbink_print_image(fbfd, str(path).encode('ascii'), x, y, fbink_cfg)
 	FBInk.fbink_print_raw_data(fbfd, raw_data, w, h, length, x, y, fbink_cfg)
 
