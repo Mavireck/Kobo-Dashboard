@@ -9,7 +9,9 @@ A dashboard for Kobo, including a clock, an interactive calendar widget, a weath
 https://www.mobileread.com/forums/showthread.php?t=254214
 * Then install KFMon:
 https://www.mobileread.com/forums/showthread.php?t=274231
-* Then, clone this repository somewhere on your kobo (I recommend /mnt/onboard/.adds/mavireck/
+* Then, clone this repository somewhere on your kobo (I recommend /mnt/onboard/.adds/mavireck/Kobo-Dashboard)
+* You will need to download the Kobo-Input-Python and Kobo-Python-OSKandUtils repositories.
+* Place the folders side by side in /mnt/onboard/.adds/mavireck
 * Then add any icon to the root of your onboard storage
 * Then, add a config file for KFMon linking the icon you added to the dashboard.sh file from this repo.
 * *(take a break)*
