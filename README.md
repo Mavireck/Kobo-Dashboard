@@ -32,7 +32,9 @@ It is meant to be used with your android phone.
 It serves as a secondary notification panel to display all your notification from your phone directly on your Kobo.
 I personally use my Kobo as a fancy clock on my desk, and having the notification on the Kobo screen instead allows me to be less distracted by my phone screen.
 
-You need an app which listens to the notification, then sends their content via a HTTP Post request to the kobo. The POST parameters must be "title", "message","package","timestamp". The first 3 must be base64encoded.
+So, wh÷n you start this app, a HTTP server is being started on the Kobo. It listens to POST requests.
+You need an app which listens to the notification, then sends their content via a HTTP Post request to the kobo (the URL is your Kobo'sIP address, visible in the top right corner of the screen, followed by :80, the port for the server).
+The POST parameters must be "title", "message","package","timestamp". The first 3 must be base64encoded.
 
 I personally use this app:
 https://play.google.com/store/apps/details?id=com.llamalab.automate&hl=fr
