@@ -1196,7 +1196,7 @@ def touchDriverFc():
 			(x, y, err) = t.getInput()
 		except:
 			continue
-		if t.debounceAllow():
+		if t.debounceAllow(x,y):
 			k = vk.getPressedKey(x, y)
 			if isKeyboardMode and k!= None:
 				#If the keyboard is displayed, and we pressed on a key, just call the function that deals with the keyboard entry
@@ -1413,6 +1413,7 @@ fbink_cfg.is_flashing = True
 FBInk.fbink_refresh(fbfd, 0, 0, 0, 0, FBInk.HWD_PASSTHROUGH, fbink_cfg)
 fbink_cfg.is_flashing = False
 
+
 # DISABLE FRONTLIGHT FIRST
 setFrontlightLevel(frontlightLevel)
 # ENABLE WIFI
@@ -1421,7 +1422,7 @@ wifiUp(False)
 
 
 # INITIALIZING KEYBOARD FOR FURTHER USE
-with open('sample-keymap-en_us.json') as json_file:
+with open('../Kobo-Python-OSKandUtils/sample-keymap-en_us.json') as json_file:
 	km = json.load(json_file)
 	vk = osk.virtKeyboard(km, conf["main"]["general"]["width"], conf["main"]["general"]["height"])
 	# Generate an image of the OSK

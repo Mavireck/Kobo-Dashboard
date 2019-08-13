@@ -14,5 +14,5 @@ sync
 killall nickel hindenburg sickel fickel fmon > /dev/null 2>&1
 
 # ./nickel_dash.sh &
-cd /mnt/onboard/.adds/mavireck
+cd /mnt/onboard/.adds/mavireck/Kobo-Dashboard
 python dashboard.py
