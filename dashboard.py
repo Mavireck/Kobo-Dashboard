@@ -1191,37 +1191,25 @@ def touchDriverFc():
 	global isKeyboardMode
 	global keyboardCallFunction
 
-	def do(x,y):
-		k = vk.getPressedKey(x, y)
-		if isKeyboardMode and k!= None:
-			#If the keyboard is displayed, and we pressed on a key, just call the function that deals with the keyboard entry
-			keyboardCallFunction(k)
-		else:
-			if coordsInArea(x,y,clock_area):
-				onTouchClock(x,y)
-			elif coordsInArea(x,y,calendar_area):
-				onTouchCalendar(x,y)
-			elif coordsInArea(x,y,weather_area):
-				onTouchWeather(x,y)
-			elif coordsInArea(x,y,notification_area):
-				onTouchNotification(x,y)
-
 	while True:
 		try:
 			(x, y, err) = t.getInput()
 		except:
 			continue
-		if coordsInArea(x,y,last_touch_area):
-			if timeDelta(last_touch_time,time.time())<conf["main"]["general"]["touchDebounceTime"]:
-				continue
+		if t.debounceAllow():
+			k = vk.getPressedKey(x, y)
+			if isKeyboardMode and k!= None:
+				#If the keyboard is displayed, and we pressed on a key, just call the function that deals with the keyboard entry
+				keyboardCallFunction(k)
 			else:
-				last_touch_area=[x-conf["main"]["general"]["touchDebounceAreaSize"],y-conf["main"]["general"]["touchDebounceAreaSize"],x+conf["main"]["general"]["touchDebounceAreaSize"],y+conf["main"]["general"]["touchDebounceAreaSize"]]
-				last_touch_time=time.time()
-				do(x,y)
-		else:
-			last_touch_time=time.time()
-			last_touch_area=[x-conf["main"]["general"]["touchDebounceAreaSize"],y-conf["main"]["general"]["touchDebounceAreaSize"],x+conf["main"]["general"]["touchDebounceAreaSize"],y+conf["main"]["general"]["touchDebounceAreaSize"]]
-			do(x,y)
+				if coordsInArea(x,y,clock_area):
+					onTouchClock(x,y)
+				elif coordsInArea(x,y,calendar_area):
+					onTouchCalendar(x,y)
+				elif coordsInArea(x,y,weather_area):
+					onTouchWeather(x,y)
+				elif coordsInArea(x,y,notification_area):
+					onTouchNotification(x,y)
 
 def printKeyboard():
 	#First, make a dump (a copy of what is behind the keyboard)
@@ -1313,7 +1301,7 @@ def wifiUp(restartHTTP=True):
 def setFrontlightLevel(level):
 	global frontlightLevel
 	frontlightLevel= level
-	# I want 10 levels.
+	# I want 10 levels, and I don't want them linear (especially because it might be useful to use the clock in the dark)
 	# Could have used an exponential function to transform the input
 	# But why shoud I do something easy when I can do something complicated ?
 	if level == 0:
@@ -1431,6 +1419,7 @@ setFrontlightLevel(frontlightLevel)
 isWifiOn = True
 wifiUp(False)
 
+
 # INITIALIZING KEYBOARD FOR FURTHER USE
 with open('sample-keymap-en_us.json') as json_file:
 	km = json.load(json_file)
@@ -1439,9 +1428,11 @@ with open('sample-keymap-en_us.json') as json_file:
 	vkPNG = "img/vk.png"
 	vk.createIMG(vkPNG)
 
+
 # INITIALIZING TOUCH
 touchPath = "/dev/input/event1"
-t = KIP.inputObject(touchPath, conf["main"]["general"]["width"], conf["main"]["general"]["height"])
+t = KIP.inputObject(touchPath, conf["main"]["general"]["width"], conf["main"]["general"]["height"],conf["main"]["general"]["touchDebounceTime"],conf["main"]["general"]["touchDebounceAreaSize"])
+
 
 #OTHER DETAILS :
 # locale.setlocale(locale.LC_ALL, '') # French
