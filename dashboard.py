@@ -1264,13 +1264,12 @@ def terminate_thread(thread):
 		ctypes.pythonapi.PyThreadState_SetAsyncExc(thread.ident, None)
 		raise SystemError("PyThreadState_SetAsyncExc failed")
 
-def wifiDown(killHTTP=False):
+def wifiDown(killHTTP=True):
 	global httpd
 	global isWifiOn
-	# if killHTTP:
-	# 	httpd.shutdown()
-	# 	terminate_thread(threads[0])
-	#Executes wifidown.sh
+	if killHTTP:
+		httpd.shutdown()
+		terminate_thread(threads[0])
 	try:
 		mprintLog("Disabling wifi")
 		os.system("sh ./files/disable-wifi.sh")
@@ -1280,7 +1279,7 @@ def wifiDown(killHTTP=False):
 	except:
 		mprintLog("Failed to disabled Wifi")
 
-def wifiUp(restartHTTP=False):
+def wifiUp(restartHTTP=True):
 	global isWifiOn
 	try:
 		mprintLog("Turning Wifi on")
@@ -1295,13 +1294,13 @@ def wifiUp(restartHTTP=False):
 		mprintLog("Failed to enable wifi")
 		mprintLog(str(sys.exc_info()[0]))
 		mprintLog(str(sys.exc_info()[1]))
-	# if restartHTTP:
-	# 	try:
-	# 		mprintLog("restarting http server")
-	# 		threads[0].start()
-	# 	except:
-	# 		mprintLog("failed to restart http server")
-	# 		return False
+	if restartHTTP:
+		try:
+			mprintLog("restarting http server")
+			threads[0].start()
+		except:
+			mprintLog("failed to restart http server")
+			return False
 
 def setFrontlightLevel(level):
 	global frontlightLevel
