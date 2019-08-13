@@ -1,21 +1,27 @@
 # -*- coding:utf-8 -*-
-import KIP
-import osk
+# System and threading
 import os
 import sys
-import json
-from _fbink import ffi, lib as FBInk
-from PIL import Image, ImageDraw, ImageFont
-import PIL.ImageOps
-import requests
-import time
-import locale
-import math
 import socket
 import threading
 import multiprocessing
+import time
+import locale
+# Tools
+import json
+import requests
+import math
 from base64 import b64decode
 import ctypes
+# FBInk and Pillow
+from _fbink import ffi, lib as FBInk
+from PIL import Image, ImageDraw, ImageFont
+import PIL.ImageOps
+# My own librairies (Kobo-Input-Python, Kobo-Python-OSKandUtils)
+sys.path.append('../Kobo-Input-Python')
+sys.path.append('../Kobo-Python-OSKandUtils')
+import KIP
+import osk
 
 # Now for the Python-version-dependent modules:
 try:
@@ -30,6 +36,8 @@ try:
 	from urlparse import parse_qs
 except ImportError:
 	from urllib.parse import urljoin
+
+
 ###############################################################################################
 """
 # TODO:
