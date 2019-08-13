@@ -36,6 +36,6 @@ You need an app which listens to the notification, then sends their content via 
 
 I personally use this app:
 https://play.google.com/store/apps/details?id=com.llamalab.automate&hl=fr
-In the demoImages folder, you will find an image of the flowchart I use.
+In the demoImages folder, you will find an image of the flowchart I use. (The Kobo.png file)
 
 Although you can use the one you want. (if you need more details about how I used this app, send me a message via the Mobileread forum)
