@@ -417,28 +417,28 @@ def onTouchClock(x,y):
 	global isNightMode
 	relativex=x-clock_area[0]
 	relativey=y-clock_area[1]
-	if coordsInArea(relativex,relativey,clock_area_wifiBtn):
+	if coordsInArea(relativex,relativey,clock_area_wifiBtn,True):
 		if isWifiOn:
 			threading.Thread(target=wifiDown).start()
 			# wifiDown(True)
 		else:
 			threading.Thread(target=wifiUp).start()
 			# wifiUp(True)
-	elif coordsInArea(relativex,relativey,clock_area_rebootBtn):
+	elif coordsInArea(relativex,relativey,clock_area_rebootBtn,True):
 		fbink_cfg_notification.row = 0
 		fbink_cfg_notification.col = 18
 		FBInk.fbink_print(fbfd, "Rebooting...", fbink_cfg_notification)
 		mprintLog("Rebooting...")
 		os.system("reboot")
-	elif coordsInArea(relativex,relativey,clock_area_frontlightBtnUP):
+	elif coordsInArea(relativex,relativey,clock_area_frontlightBtnUP,True):
 		if frontlightLevel <10:
 			frontlightLevel += 1
 			setFrontlightLevel(frontlightLevel)
-	elif coordsInArea(relativex,relativey,clock_area_frontlightBtnDOWN):
+	elif coordsInArea(relativex,relativey,clock_area_frontlightBtnDOWN,True):
 		if frontlightLevel>0:
 			frontlightLevel -= 1
 			setFrontlightLevel(frontlightLevel)
-	elif coordsInArea(relativex,relativey,clock_area_invertBtn):
+	elif coordsInArea(relativex,relativey,clock_area_invertBtn,False):
 		if isNightMode:
 			isNightMode = False
 			fbink_cfg.is_nightmode = False
@@ -1362,8 +1362,10 @@ def cv16BitsTo255(x):
 def cv255To16Bits(x):
 	return int(x*16/255)
 
-def coordsInArea(x,y,area):
+def coordsInArea(x,y,area,invertArea=False):
 	if x>=area[0] and x<area[2] and y>=area[1] and y<area[3]:
+		if invertArea:
+			touchIndicator(area)
 		return True
 	else:
 		return False
@@ -1409,6 +1411,20 @@ def deleteTempImgFiles():
 	else:
 		os.mkdir('img')
 	return True
+
+def touchIndicator(area):
+	def invertArea(type=0):
+		if type==1:
+			fbink_cfg.is_nightmode = True
+		else:
+			fbink_cfg.is_nightmode = False
+		FBInk.fbink_refresh(fbfd, area[1], area[0], area[2]-area[0], area[3]-area[1], FBInk.HWD_PASSTHROUGH, fbink_cfg)
+		if type==1:
+			fbink_cfg.is_nightmode = False
+		else:
+			fbink_cfg.is_nightmode = True
+	invertArea(1)
+	threading.Timer(0.5,invertArea).start()
 ###############################################################################################
 ###############################################################################################
 
