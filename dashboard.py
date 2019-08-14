@@ -45,13 +45,43 @@ TO DO : Keep the last file and a variable called "last_update_XXX".
 If the device goes offline, it can still display the last version it received.
 """
 ###############################################################################################
+###############################################################################################
 # READ CONFIG FILE
 with open('files/config.json') as json_file:
 	conf = json.load(json_file)
 
+
+# INITIALIZING DISPLAY
+fbink_cfg_clock = ffi.new("FBInkConfig *")
+fbink_cfg_weather = ffi.new("FBInkConfig *")
+fbink_cfg = ffi.new("FBInkConfig *")
+fbink_cfg_notification = ffi.new("FBInkConfig *")
+fbink_cfg_quotes = ffi.new("FBInkConfig *")
+fbink_cfg_IP = ffi.new("FBInkConfig *")
+fbink_dumpcfg = ffi.new("FBInkDump *")
+fbfd = FBInk.fbink_open()
+FBInk.fbink_init(fbfd, fbink_cfg_IP)
+
+fbink_ot_cfg = ffi.new("FBInkOTConfig *")
+FBInk.fbink_add_ot_font("fonts/Merriweather-Regular.ttf", FBInk.FNT_REGULAR);
+FBInk.fbink_add_ot_font("fonts/Merriweather-RegularItalic.ttf", FBInk.FNT_ITALIC);
+FBInk.fbink_add_ot_font("fonts/Merriweather-BoldItalic.ttf", FBInk.FNT_BOLD_ITALIC);
+FBInk.fbink_add_ot_font("fonts/Merriweather-Bold.ttf", FBInk.FNT_BOLD);
+
+#Get screen infos
+state = ffi.new("FBInkState *")
+FBInk.fbink_get_state(fbink_cfg, state)
+screen_width=state.screen_width
+screen_height=state.screen_height
+
+#Clear screen
+FBInk.fbink_cls(fbfd, fbink_cfg_IP)
+
+###############################################################################################
+
 sleep_quote = 60*60*4	# every 4 hours or on touch
 sleep_gkeep = 60*30  	# every 30 minutes or on touch
-updateWeatherAt = 7 
+updateWeatherAt = 7
 
 last_update_weather = 0
 last_update_notification = 0
@@ -79,15 +109,13 @@ white = 255
 black = 0
 gray = 128
 
-screen_width=conf["main"]["general"]["width"]
-screen_height=conf["main"]["general"]["height"]
 clock_area = [0,0,screen_width,int(screen_height*conf["main"]["clock"]["size"])]
 calendar_area = [0,clock_area[3],screen_width,clock_area[3]+int(screen_height*conf["main"]["calendar"]["size"])]
 weather_area = [0,calendar_area[3],screen_width,calendar_area[3]+int(screen_height*conf["main"]["weather"]["size"])]
 notification_area = [0,weather_area[3],screen_width,weather_area[3]+int(screen_height*conf["main"]["notif"]["size"])]
 
 
-# Relative position within the weather area : 
+# Relative position within the weather area :
 weather_area_today = [0,0,int(0.66*weather_area[2]),weather_area[3]-weather_area[1]]
 weather_area_coming_days = [weather_area_today[2]+1,0,weather_area[2],weather_area[3]-weather_area[1]]
 weather_area_coming_day_1 = [weather_area_coming_days[0],weather_area_coming_days[1],weather_area_coming_days[2],weather_area_coming_days[1]+int(0.33*(weather_area_coming_days[3]-weather_area_coming_days[1]))]
@@ -103,7 +131,7 @@ weather_area_t21 = [weather_area_t18[2],weather_area_today[1]+40,int(6*weather_a
 #Relative position within the calendar area:
 calendar_area_days = [[calendar_area[0]+int(i*(calendar_area[2]-calendar_area[0])/conf["main"]["calendar"]["numberOfDaysOnScreen"]),0,calendar_area[0]+int((i+1)*(calendar_area[2]-calendar_area[0])/conf["main"]["calendar"]["numberOfDaysOnScreen"]),calendar_area[3]-calendar_area[1]] for i in range(conf["main"]["calendar"]["numberOfDaysOnScreen"])]
 calendar_area_addEvent_Textboxes_area=[]  	#Global variable initialization (they will be properly defined later)
-calendar_area_addEvent_beginHour=[]  
+calendar_area_addEvent_beginHour=[]
 calendar_area_addEvent_endHour=[]
 calendar_area_addEvent_Title=[]
 calendar_area_addEvent_Color=[]
@@ -134,7 +162,7 @@ class S(SimpleHTTPRequestHandler):
 		self.send_response(200)
 		self.send_header('Content-type', 'text/html')
 		self.end_headers()
-		
+
 	def do_POST(self):
 		try:
 			# Doesn't do anything with posted data
@@ -154,7 +182,7 @@ class S(SimpleHTTPRequestHandler):
 			mprintLog(str(sys.exc_info()[0]))
 			mprintLog(str(sys.exc_info()[1]))
 			return False
-		
+
 def run(server_class=HTTPServer, handler_class=S, port=80):
 	global httpd
 	try:
@@ -229,7 +257,7 @@ def displayArray(arrayToDisplay,mode):
 	if useOldPrintImg:
 		# OLD WAY
 		mprintImg_path(conf["imgPath"]["notifications"], notification_area[0], notification_area[1]+1)
-	else:	
+	else:
 		# NEW WAY:
 		raw_data=img.tobytes("raw")
 		raw_len = len(raw_data)
@@ -527,7 +555,7 @@ def printWeather(weatherData):
 		weatherImg.text((eval(area_to_call)[0]+border,eval(area_to_call)[1] + condition_size + 4*temp_h + 6*border), wind + "m/s", font=tiny_font, fill=50)
 		img.paste(wind_arrow.rotate((180+windRot)%360,fillcolor='white'),[eval(area_to_call)[0]+30,eval(area_to_call)[1] + condition_size + 5*temp_h +8*border])
 		i+=1
-	
+
 	# Then the coming days :
 	# Separation lines:
 	weatherImg.line([weather_area_coming_day_2[0],weather_area_coming_day_2[1],weather_area_coming_day_1[2],weather_area_coming_day_1[3]],200)
@@ -600,7 +628,7 @@ def printWeather(weatherData):
 		# OLD WAY:
 		img.save(conf["imgPath"]["weather"])
 		mprintImg_path(conf["imgPath"]["weather"], weather_area[0], weather_area[1]+1)
-	else:	
+	else:
 		# NEW WAY:
 		raw_data=img.tobytes("raw")
 		raw_len = len(raw_data)
@@ -622,12 +650,12 @@ def most_frequent(List):
 			count, itm = dict[item], item
 	return (itm)
 
-def average(lst): 
-	return sum(lst) / len(lst) 
+def average(lst):
+	return sum(lst) / len(lst)
 
 ###############################################################################################
 current_calendar_view = "week"
-current_calendar_eventBeingEdited=False 	#Holds the new data event we are editing (or creating) 
+current_calendar_eventBeingEdited=False 	#Holds the new data event we are editing (or creating)
 current_calendar_eventBeingEdited_beforeEdit=False
 current_calendar_isEditMode = False			#Holds the event number if in edit mode
 current_calendar_eventsAreas = [[] for i in range(len(calendar_area_days))]			#Relative position of the events within a day area
@@ -698,7 +726,7 @@ def printCalendar_WeekView(data,starting_day):
 	# Separation lines between the days
 	for i in range(len(calendar_area_days)-1):
 		cd.line([calendar_area_days[i+1][0],calendar_area_days[i+1][1],calendar_area_days[i][2],calendar_area_days[i][3]], gray)	#Main separation today/coming days
-	
+
 	for i in range(len(calendar_area_days)):
 		dayData = extractSpecificDayData(data,starting_day,i)
 		if dayData:
@@ -714,7 +742,7 @@ def printCalendar_WeekView(data,starting_day):
 		# OLD WAY:
 		img.save(conf["imgPath"]["cd_weekView"])
 		mprintImg_path(conf["imgPath"]["cd_weekView"], calendar_area[0], calendar_area[1]+1)
-	else:	
+	else:
 		# NEW WAY:
 		raw_data=img.tobytes("raw")
 		raw_len = len(raw_data)
@@ -762,7 +790,7 @@ def printCalendar_singleDay(dayData,dayNumber):
 		cd_day.text((rectx+0*border,recty+0*border),str('{0:g}'.format(float(dayData["events"][i]["beginHour"]))),font=tiny_tiny_tiny_font,fill=50)
 		if 2*hour_h>recth:
 			# In this case, we do not have enough room to display the hours on the top and bottom left corners.
-			# So we display them 
+			# So we display them
 			cd_day.text((int(rectx+rectw-1*hour_w+0*border),recty+0*border),str('{0:g}'.format(float(dayData["events"][i]["endHour"]))),font=tiny_tiny_tiny_font,fill=50)
 		else:
 			cd_day.text((rectx+0*border,recty+recth-0*border-hour_h),str('{0:g}'.format(float(dayData["events"][i]["endHour"]))),font=tiny_tiny_tiny_font,fill=50)
@@ -821,7 +849,7 @@ def printCalendar_AddEventView(data,starting_day,day):
 	if useOldPrintImg:
 		# OLD WAY:
 		mprintImg_path("img/full_calendar_dayView.png", calendar_area[0], calendar_area[1]+1)
-	else:	
+	else:
 		# NEW WAY:
 		raw_data=img.tobytes("raw")
 		raw_len = len(raw_data)
@@ -832,11 +860,11 @@ def printCalendar_AddEventView(data,starting_day,day):
 
 def printCalendar_printTextboxesArea():
 	"""
-	Returns the path to the image file containing ONLY the half with the textboxes. 
+	Returns the path to the image file containing ONLY the half with the textboxes.
 	Advantage : can be called when editing the textboxes :
 	Instead of re-drawing the whole area, it only redraws the part with the text
 	"""
-	global current_calendar_eventBeingEdited 
+	global current_calendar_eventBeingEdited
 	global current_calendar_isEditMode
 	global calendar_area_addEvent_Textboxes_area
 	global calendar_area_addEvent_beginHour
@@ -875,7 +903,7 @@ def printCalendar_printTextboxesArea():
 		tb_img = "img/cd_textboxes.png"
 		img.save(tb_img)
 		mprintImg_path(tb_img, calendar_area[0]+calendar_area_addEvent_Textboxes_area[0],calendar_area[1]+calendar_area_addEvent_Textboxes_area[1]+1)
-	else:	
+	else:
 		# NEW WAY:
 		raw_data=img.tobytes("raw")
 		raw_len = len(raw_data)
@@ -972,12 +1000,12 @@ def keyboard_cd_Title(key):
 
 	if not useFastTextInput:
 		# # VERY OLD SOLUTION : for each new character, print the whole area image again
-		# printCalendar_AddEventView(calendar_data,current_week_starting_day,current_day_number)  
+		# printCalendar_AddEventView(calendar_data,current_week_starting_day,current_day_number)
 		# NEWER SOLUTION : print only the textboxes area:
 		printCalendar_printTextboxesArea()
 	else:
 		# # Let's do this better : print only the specific text using fbink's openType and truetype support
-		
+
 		fbink_ot_cfg.margins.top = 500
 		fbink_ot_cfg.margins.bottom = 600
 		fbink_ot_cfg.margins.left = 400
@@ -1031,7 +1059,7 @@ def keyboard_appendKeyToString(k):
 	elif k["keyType"] == osk.KTbackspace:
 		if len(runeStr) > 0:
 			# removing last element and drawing and empty space instead
-			runeStr = runeStr[:-1] 
+			runeStr = runeStr[:-1]
 	elif k["keyType"] == osk.KTcapsLock:
 		if upperCase:
 			upperCase = False
@@ -1139,20 +1167,20 @@ def printBackground():
 	First time only
 	"""
 	# Init image
-	img = Image.new('L', (conf["main"]["general"]["width"], conf["main"]["general"]["height"]+1), color=white)
+	img = Image.new('L', (screen_width, screen_height+1), color=white)
 	bg = ImageDraw.Draw(img, 'L')
 	border=10
 	# Draw lines in the middle of the screen
-	bg.line([border,clock_area[3],conf["main"]["general"]["width"]-border, clock_area[3]], gray)
-	bg.line([border,weather_area[3],conf["main"]["general"]["width"]-border, weather_area[3]], gray)
-	bg.line([border,notification_area[3],conf["main"]["general"]["width"]-border, notification_area[3]], gray)
-	bg.line([border,calendar_area[3],conf["main"]["general"]["width"]-border, calendar_area[3]], gray)
+	bg.line([border,clock_area[3],screen_width-border, clock_area[3]], gray)
+	bg.line([border,weather_area[3],screen_width-border, weather_area[3]], gray)
+	bg.line([border,notification_area[3],screen_width-border, notification_area[3]], gray)
+	bg.line([border,calendar_area[3],screen_width-border, calendar_area[3]], gray)
 	# Saving background and displaying it
 	img.save(conf["imgPath"]["background"])
 	if useOldPrintImg:
 		# OLD WAY:
 		mprintImg_path(conf["imgPath"]["background"], 0, 0)
-	else:	
+	else:
 		# NEW WAY:
 		raw_data=img.tobytes("raw")
 		raw_len = len(raw_data)
@@ -1383,25 +1411,7 @@ def deleteTempImgFiles():
 	return True
 ###############################################################################################
 ###############################################################################################
-# INITIALIZING DISPLAY
-fbink_cfg_clock = ffi.new("FBInkConfig *")
-fbink_cfg_weather = ffi.new("FBInkConfig *")
-fbink_cfg = ffi.new("FBInkConfig *")
-fbink_cfg_notification = ffi.new("FBInkConfig *")
-fbink_cfg_quotes = ffi.new("FBInkConfig *")
-fbink_cfg_IP = ffi.new("FBInkConfig *")
-fbink_dumpcfg = ffi.new("FBInkDump *")
-fbfd = FBInk.fbink_open()
-FBInk.fbink_init(fbfd, fbink_cfg_IP)
 
-fbink_ot_cfg = ffi.new("FBInkOTConfig *")
-FBInk.fbink_add_ot_font("fonts/Merriweather-Regular.ttf", FBInk.FNT_REGULAR);
-FBInk.fbink_add_ot_font("fonts/Merriweather-RegularItalic.ttf", FBInk.FNT_ITALIC);
-FBInk.fbink_add_ot_font("fonts/Merriweather-BoldItalic.ttf", FBInk.FNT_BOLD_ITALIC);
-FBInk.fbink_add_ot_font("fonts/Merriweather-Bold.ttf", FBInk.FNT_BOLD);
-
-#Clear screen
-FBInk.fbink_cls(fbfd, fbink_cfg_IP)
 
 deleteTempImgFiles()
 
@@ -1424,7 +1434,7 @@ wifiUp(False)
 # INITIALIZING KEYBOARD FOR FURTHER USE
 with open('../Kobo-Python-OSKandUtils/sample-keymap-en_us.json') as json_file:
 	km = json.load(json_file)
-	vk = osk.virtKeyboard(km, conf["main"]["general"]["width"], conf["main"]["general"]["height"])
+	vk = osk.virtKeyboard(km, screen_width, screen_height)
 	# Generate an image of the OSK
 	vkPNG = "img/vk.png"
 	vk.createIMG(vkPNG)
@@ -1432,7 +1442,7 @@ with open('../Kobo-Python-OSKandUtils/sample-keymap-en_us.json') as json_file:
 
 # INITIALIZING TOUCH
 touchPath = "/dev/input/event1"
-t = KIP.inputObject(touchPath, conf["main"]["general"]["width"], conf["main"]["general"]["height"],conf["main"]["general"]["touchDebounceTime"],conf["main"]["general"]["touchDebounceAreaSize"])
+t = KIP.inputObject(touchPath, screen_width, screen_height,conf["main"]["general"]["touchDebounceTime"],conf["main"]["general"]["touchDebounceAreaSize"])
 
 
 #OTHER DETAILS :
