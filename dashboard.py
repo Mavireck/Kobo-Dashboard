@@ -224,7 +224,7 @@ def displayArray(arrayToDisplay,mode):
 	notifsImg.text((int(0.5*(notification_area[2]+notification_area[0])-0.5*mode_w),10), mode, font=small_font, fill=black)
 	# Popping element if there are too many
 	sample_notif_title_w, sample_notif_title_h = notifsImg.textsize("- AVERAGE2 height of the texts |", font=tiny_font)
-	while len(arrayToDisplay)*sample_notif_title_h+mode_h+20>notification_area[3]-notification_area[1]:
+	while len(arrayToDisplay)*(sample_notif_title_h+8)+mode_h+10>notification_area[3]-notification_area[1]:
 		arrayToDisplay = arrayToDisplay[1:]
 		if mode == "Notifications":
 			notifications_histoy=arrayToDisplay
