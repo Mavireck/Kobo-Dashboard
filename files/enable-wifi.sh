@@ -30,7 +30,7 @@ while lsmod | grep -q sdio_wifi_pwr; do
 done
 
 # Load wifi modules and enable wifi.
-lsmod | grep -q sdio_wifi_pwr || insmod "/drivers/mx50-ntx/wifi/sdio_wifi_pwr.ko"
+lsmod | grep -q sdio_wifi_pwr || insmod "/drivers/${PLATFORM}/wifi/sdio_wifi_pwr.ko"
 # Moar sleep!
 usleep 250000
 # WIFI_MODULE_PATH = /drivers/$PLATFORM/wifi/$WIFI_MODULE.ko
