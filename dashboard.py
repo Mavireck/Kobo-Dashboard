@@ -223,8 +223,8 @@ def displayArray(arrayToDisplay,mode):
 	mode_w, mode_h = notifsImg.textsize(mode, font=small_font)
 	notifsImg.text((int(0.5*(notification_area[2]+notification_area[0])-0.5*mode_w),10), mode, font=small_font, fill=black)
 	# Popping element if there are too many
-	sample_notif_title_w, sample_notif_title_h = notifsImg.textsize("average height of the texts", font=tiny_font)
-	while len(arrayToDisplay)*sample_notif_title_h+mode_h+10>notification_area[3]-notification_area[1]:
+	sample_notif_title_w, sample_notif_title_h = notifsImg.textsize("- AVERAGE2 height of the texts |", font=tiny_font)
+	while len(arrayToDisplay)*sample_notif_title_h+mode_h+20>notification_area[3]-notification_area[1]:
 		arrayToDisplay = arrayToDisplay[1:]
 		if mode == "Notifications":
 			notifications_histoy=arrayToDisplay
@@ -1288,7 +1288,7 @@ def terminate_thread(thread):
 		ctypes.pythonapi.PyThreadState_SetAsyncExc(thread.ident, None)
 		raise SystemError("PyThreadState_SetAsyncExc failed")
 
-def wifiDown(killHTTP=True):
+def wifiDown(killHTTP=False):
 	global httpd
 	global isWifiOn
 	if killHTTP:
@@ -1303,7 +1303,7 @@ def wifiDown(killHTTP=True):
 	except:
 		mprintLog("Failed to disabled Wifi")
 
-def wifiUp(restartHTTP=True):
+def wifiUp(restartHTTP=False):
 	global isWifiOn
 	try:
 		mprintLog("Turning Wifi on")
