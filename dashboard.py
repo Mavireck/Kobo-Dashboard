@@ -98,23 +98,24 @@ frontlightLevel = 0
 
 # NOW LETS LOAD EVERY FONT YEAH
 # TODO : use less of 'em
-tiny_tiny_tiny_font_size =  int(conf["sizes"]["fonts"]["tiny_tiny_tiny_font_size_percentageOfScreenHeight"] * screen_height/100)
+sf = conf["sizes"]["fonts"]["scaleFactor"]
+tiny_tiny_tiny_font_size =  int(conf["sizes"]["fonts"]["tiny_tiny_tiny_font_size_percentageOfScreenHeight"] * screen_height * sf /100)
 tiny_tiny_tiny_font = ImageFont.truetype("fonts/Cabin-Regular.ttf", tiny_tiny_tiny_font_size)
 
-tiny_tiny_font_size = int(conf["sizes"]["fonts"]["tiny_tiny_font_size_percentageOfScreenHeight"] * screen_height/100)
+tiny_tiny_font_size = int(conf["sizes"]["fonts"]["tiny_tiny_font_size_percentageOfScreenHeight"] * screen_height * sf /100)
 tiny_tiny_font = ImageFont.truetype("fonts/Cabin-Regular.ttf", tiny_tiny_font_size)
 
-tiny_font_size = int(conf["sizes"]["fonts"]["tiny_font_size_percentageOfScreenHeight"] * screen_height/100)
+tiny_font_size = int(conf["sizes"]["fonts"]["tiny_font_size_percentageOfScreenHeight"] * screen_height * sf /100)
 tiny_font = ImageFont.truetype("fonts/Cabin-Regular.ttf", tiny_font_size)
 
-small_font_size = int(conf["sizes"]["fonts"]["small_font_size_percentageOfScreenHeight"] * screen_height/100)
+small_font_size = int(conf["sizes"]["fonts"]["small_font_size_percentageOfScreenHeight"] * screen_height * sf /100)
 small_font = ImageFont.truetype("fonts/Merriweather-Regular.ttf", small_font_size)
 small_font_bold = ImageFont.truetype("fonts/Merriweather-Bold.ttf", small_font_size)
 
-clockText_font_size = int(conf["sizes"]["fonts"]["clockText_font_size_percentageOfScreenHeight"] * screen_height/100)
+clockText_font_size = int(conf["sizes"]["fonts"]["clockText_font_size_percentageOfScreenHeight"] * screen_height * sf /100)
 clockText_font = ImageFont.truetype("fonts/Comfortaa-Regular.ttf", clockText_font_size)
 
-dateText_font_size = int(conf["sizes"]["fonts"]["dateText_font_size_percentageOfScreenHeight"] * screen_height/100)
+dateText_font_size = int(conf["sizes"]["fonts"]["dateText_font_size_percentageOfScreenHeight"] * screen_height * sf /100)
 dateText_font = ImageFont.truetype("fonts/Comfortaa-Regular.ttf", dateText_font_size)
 
 
