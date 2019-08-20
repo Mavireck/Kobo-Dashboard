@@ -95,15 +95,28 @@ useOldPrintImg = False
 isNightMode=conf["main"]["general"]["isNightMode"]
 frontlightLevel = 0
 
-tiny_tiny_tiny_font = ImageFont.truetype("fonts/Cabin-Regular.ttf", 15)
-tiny_tiny_font = ImageFont.truetype("fonts/Cabin-Regular.ttf", 18)
-tiny_font = ImageFont.truetype("fonts/Cabin-Regular.ttf", 24)
-small_font = ImageFont.truetype("fonts/Merriweather-Regular.ttf", 26)
-small_font_bold = ImageFont.truetype("fonts/Merriweather-Bold.ttf", 26)
-font = ImageFont.truetype("fonts/Forum-Regular.ttf", 50)
-comfortaa_big = ImageFont.truetype("fonts/Comfortaa-Regular.ttf", 180)
-comfortaa = ImageFont.truetype("fonts/Comfortaa-Regular.ttf", 80)
-comfortaa_small = ImageFont.truetype("fonts/Comfortaa-Regular.ttf", 40)
+
+# NOW LETS LOAD EVERY FONT YEAH
+# TODO : use less of 'em
+tiny_tiny_tiny_font_size =  int(conf["sizes"]["fonts"]["tiny_tiny_tiny_font_size_percentageOfScreenHeight"] * screen_height/100)
+tiny_tiny_tiny_font = ImageFont.truetype("fonts/Cabin-Regular.ttf", tiny_tiny_tiny_font_size)
+
+tiny_tiny_font_size = int(conf["sizes"]["fonts"]["tiny_tiny_font_size_percentageOfScreenHeight"] * screen_height/100)
+tiny_tiny_font = ImageFont.truetype("fonts/Cabin-Regular.ttf", tiny_tiny_font_size)
+
+tiny_font_size = int(conf["sizes"]["fonts"]["tiny_font_size_percentageOfScreenHeight"] * screen_height/100)
+tiny_font = ImageFont.truetype("fonts/Cabin-Regular.ttf", tiny_font_size)
+
+small_font_size = int(conf["sizes"]["fonts"]["small_font_size_percentageOfScreenHeight"] * screen_height/100)
+small_font = ImageFont.truetype("fonts/Merriweather-Regular.ttf", small_font_size)
+small_font_bold = ImageFont.truetype("fonts/Merriweather-Bold.ttf", small_font_size)
+
+clockText_font_size = int(conf["sizes"]["fonts"]["clockText_font_size_percentageOfScreenHeight"] * screen_height/100)
+clockText_font = ImageFont.truetype("fonts/Comfortaa-Regular.ttf", clockText_font_size)
+
+dateText_font_size = int(conf["sizes"]["fonts"]["dateText_font_size_percentageOfScreenHeight"] * screen_height/100)
+dateText_font = ImageFont.truetype("fonts/Comfortaa-Regular.ttf", dateText_font_size)
+
 
 white = 255
 black = 0
@@ -356,10 +369,10 @@ def printClock(time_arg):
 	frontlight_upImg = Image.open("icons/invert.jpg").resize((icon_size,icon_size))
 	img.paste(frontlight_upImg,[clock_area_invertBtn[0]+big_border,clock_area_invertBtn[1]+big_border])
 	# Clock
-	clock_w, clock_h = clock.textsize(clockToDisplay, font=comfortaa_big)
-	date_w, date_h = clock.textsize(dateToDisplay, font=comfortaa_small)
-	clock.text((int(0.5*clock_area[2]-0.5*clock_w), int(0.5*clock_area[3]-0.6*clock_h)), clockToDisplay, font=comfortaa_big, fill=black)
-	clock.text((max(int(0.5*clock_area[2]-0.5*date_w),10), int(0.5*clock_area[3]+0.7*clock_h)), dateToDisplay, font=comfortaa_small, fill=50)
+	clock_w, clock_h = clock.textsize(clockToDisplay, font=clockText_font)
+	date_w, date_h = clock.textsize(dateToDisplay, font=dateText_font)
+	clock.text((int(0.5*clock_area[2]-0.5*clock_w), int(0.5*clock_area[3]-0.6*clock_h)), clockToDisplay, font=clockText_font, fill=black)
+	clock.text((max(int(0.5*clock_area[2]-0.5*date_w),10), int(0.5*clock_area[3]+0.7*clock_h)), dateToDisplay, font=dateText_font, fill=50)
 	img.save(conf["imgPath"]["clock"])
 	if useOldPrintImg:
 		# # OLD WAY:

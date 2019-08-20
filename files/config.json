@@ -38,7 +38,16 @@
 		"notifications":"./img/notifications.png"
 	},
 	"margins":{},
-	"sizes":{},
+	"sizes":{
+		"fonts":{
+			"tiny_tiny_tiny_font_size_percentageOfScreenHeight":1.389,
+			"tiny_tiny_font_size_percentageOfScreenHeight":1.667,
+			"tiny_font_size_percentageOfScreenHeight":2.222,
+			"small_font_size_percentageOfScreenHeight":2.4074,
+			"clockText_font_size_percentageOfScreenHeight":16.667,
+			"dateText_font_size_percentageOfScreenHeight":3.7037
+		}
+	},
 	"text":{
 		"general":{
 			"wifiDisconnected":"Wifi off",
