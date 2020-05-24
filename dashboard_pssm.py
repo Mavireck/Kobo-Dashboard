@@ -274,9 +274,10 @@ hline = pssm.Line(color="gray10",type="horizontal")
 
 # TODAY
 h = [Weather_Hour(weatherData,i) for i in range(6)]
+list_h = [(h[i],"?/6") for i in range(6)]
 layout_weather_today = [
 	["?/10", (btnCity,"w/6") , (btnToday,"?") , (None,"w/6")],
-	["?", (h[0],"?/6"),(h[1],"?/6"),(h[2],"?/6"),(h[3],"?/6"),(h[4],"?/6"),(h[5],"?/6")]
+	["?", 				*list_h  							]
 ]
 weatherToday = pssm.Layout(layout_weather_today)
 
