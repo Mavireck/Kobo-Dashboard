@@ -612,9 +612,9 @@ def printWeather(weatherData):
 		# Separation AM/PM
 		weatherImg.line([int(0.5*(area[2]+area[0])),area[1]+40,int(0.5*(area[2]+area[0])),area[3]],200)
 		# Text AM/text PM
-		daySepText_w, daySepText_h = weatherImg.textsize("matin", font=tiny_font)
-		weatherImg.text((int((1*area[2]+3*area[0])/4-0.5*daytext_w),area[1]+daytext_h+0.5*border), "Matin" , font=tiny_font, fill=50)
-		weatherImg.text((int((3*area[2]+1*area[0])/4-0.5*daytext_w),area[1]+daytext_h+0.5*border), str("Apres-midi") , font=tiny_font, fill=50)
+		daySepText_w, daySepText_h = weatherImg.textsize("Morning", font=tiny_font)
+		weatherImg.text((int((1*area[2]+3*area[0])/4-0.5*daytext_w),area[1]+daytext_h+0.5*border), "Morning" , font=tiny_font, fill=50)
+		weatherImg.text((int((3*area[2]+1*area[0])/4-0.5*daytext_w),area[1]+daytext_h+0.5*border), str("Afternoon") , font=tiny_font, fill=50)
 		# Icon AM/PM
 		# condition_size = max(area[3]-area[1]-2*daytext_h-2*border,10)
 		condition_size = max(area[3]-area[1]-8*border,10)
