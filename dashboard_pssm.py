@@ -278,7 +278,7 @@ layout_weather_today = [
 	["?/10", (btnCity,"w/6") , (btnToday,"?") , (None,"w/6")],
 	["?", (h[0],"?/6"),(h[1],"?/6"),(h[2],"?/6"),(h[3],"?/6"),(h[4],"?/6"),(h[5],"?/6")]
 ]
-today = pssm.Layout(layout_weather_today)
+weatherToday = pssm.Layout(layout_weather_today)
 
 # COMING DAYS
 d = []
@@ -295,13 +295,7 @@ layout_weather_comingDays = [
 	[1,(hline,"?")],
 	["?", (d[2],"?")]
 ]
-comingDays = pssm.Layout(layout_weather_comingDays)
-
-# MAIN
-layout_weather = [
-	["?", (today,"?"), (vline,1), (comingDays,"w/3")]
-]
-weather = pssm.Layout(layout_weather)
+weatherComingDays = pssm.Layout(layout_weather_comingDays)
 
 
 
@@ -319,12 +313,12 @@ separatorLine = pssm.Line(color="gray10",width=1,type="horizontal")
 layout_main = [
 	[10																		  ],
 	["?/4" , (iconBar, "w*0.2")   , (clock, "?")  ,  (infos, "w*0.15") 		  ],
-	[1, (separatorLine,"w")													  ],
-	["?/4", (None,"w")														  ],
-	[1, (separatorLine,"w")													  ],
-	["?/4", (weather,"w")													  ],
-	[1, (separatorLine,"w")													  ],
-	["?/5", (None,"w")														  ]
+	[1, 			(separatorLine,"w")										  ],
+	["?/4", 			(None,"w")											  ],
+	[1,				(separatorLine,"w")										  ],
+	["?/4", (weatherToday,"?"),    (vline,1),     (weatherComingDays,"w/3")   ],
+	[1, 			(separatorLine,"w")										  ],
+	["?/5", 			(None,"w")											  ]
 ]
 
 
